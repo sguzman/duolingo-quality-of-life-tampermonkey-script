@@ -24,7 +24,7 @@
             if (a || b) {
                 let obj1 = $('span[data-test="hint-sentence"]');
                 let obj2 = $('textarea');
-                if (obj1.length > 0 && obj2 === 1) {
+                if (obj1.length > 0 && obj2.length === 1) {
                     obj1.css('user-select', 'text');
                     obj1.children().css('user-select', 'text');
                     console.log('found it');
