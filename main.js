@@ -11,14 +11,28 @@
 // @grant        none
 // ==/UserScript==
 
+/* globals $, jQuery */
+
+
 (function() {
     'use strict';
-    setInterval(function () {
-        let eles = document.getElementsByTagName('*');
+    console.log('hi :)');
+    $(document).ready(function () {
+        $("body").bind("DOMSubtreeModified", function() {
+            const a = window.location.href.startsWith('https://www.duolingo.com/practice');
+            const b = window.location.href.startsWith('https://www.duolingo.com/skill');
+            if (a || b) {
+                let obj1 = $('span[data-test="hint-sentence"]');
+                let obj2 = $('textarea');
+                if (obj1.length > 0 && obj2 === 1) {
+                    obj1.css('user-select', 'text');
+                    obj1.children().css('user-select', 'text');
+                    console.log('found it');
+                }
+    
+            }
+        });
+    });
 
-        console.log('Got ', eles.length, ' elements');
-        for (let i = 0; i < eles.length; ++i) {
-            eles[i].style.userSelect = 'text';
-        }
-    }, 500);
+    console.log('bye :(');
 })();
