@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Make a text selectable
+// @name         Make a text selectable in Practice
 // @namespace    http://tampermonkey.net/
 // @version      0.1
 // @description  try to take over the world!
@@ -12,27 +12,59 @@
 // ==/UserScript==
 
 /* globals $, jQuery */
+'use strict';
+console.log('hi :)');
+let clipped = [];
+let obj = null;
 
+function copyTextToClipboard(text)
+{
+    console.log('copy');
+    navigator.clipboard.writeText(text)
+        .then(
+        function ()
+        {
+            clipped.push(text);
+            console.log('Async: Copying to clipboard was successful!');
+        },
+        function (err)
+        {
+            console.error('Async: Could not copy text: ', err);
+        }
+    );
+}
 
-(function() {
-    'use strict';
-    console.log('hi :)');
-    $(document).ready(function () {
-        $("body").bind("DOMSubtreeModified", function() {
-            const a = window.location.href.startsWith('https://www.duolingo.com/practice');
-            const b = window.location.href.startsWith('https://www.duolingo.com/skill');
-            if (a || b) {
-                let obj1 = $('span[data-test="hint-sentence"]');
-                let obj2 = $('textarea');
-                if (obj1.length > 0 && obj2.length === 1) {
-                    obj1.css('user-select', 'text');
-                    obj1.children().css('user-select', 'text');
-                    //console.log('found it');
-                }
+function payload()
+{
+    console.log('Exec...');
+    if (window.location.href.startsWith('https://www.duolingo.com/practice'))
+    {
+        console.log('Found location');
+        const s = "textarea";
+        const area = $(s);
+        if (obj && obj != area)
+        {
+            console.log('focused');
+            obj = area;
+            area.focus();
+        }
 
+        const text = $('[data-test="hint-token"]');
+        if (text.length > 0)
+        {
+            console.log(text);
+            const content = text.toArray().map(s => s.textContent).join('');
+            const lastIdx = clipped.length - 1;
+            const firstIdx = lastIdx - 1;
+
+            if (lastIdx > -1 && firstIdx > -1 && clipped[lastIdx] !== content && clipped[firstIdx] !== content)
+            {
+                console.log('\t', text);
+                copyTextToClipboard(content);
             }
-        });
-    });
+        }
+    }
+}
 
-    console.log('bye :(');
-})();
+setInterval(async()=>
+     await navigator.clipboard.writeText($('[data-test="hint-token"]').toArray().map(s => s.innerText.trim()).join('')), 1000)
